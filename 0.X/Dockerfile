@@ -1,5 +1,5 @@
-FROM alpine:3.4
-MAINTAINER James Phillips <james@hashicorp.com> (@slackpad)
+FROM alpine:3.5
+LABEL maintainer "daniel@suitsoft.eu"
 
 # This is the release of Consul to pull in.
 ENV CONSUL_VERSION=0.7.5
