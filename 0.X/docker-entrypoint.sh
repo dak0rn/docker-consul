@@ -36,6 +36,12 @@ if [ -n "$CONSUL_CLIENT_INTERFACE" ]; then
   echo "==> Found address '$CONSUL_CLIENT_ADDRESS' for interface '$CONSUL_CLIENT_INTERFACE', setting client option..."
 fi
 
+# Determine the host's IP address and use it for advertising
+# Refer to:
+#  https://www.consul.io/docs/agent/options.html#_advertise
+#  https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html
+CONSUL_ADVERTISE="-advertise $(wget -qO- 169.254.169.254/latest/meta-data/local-ipv4)"
+
 # CONSUL_DATA_DIR is exposed as a volume for possible persistent storage. The
 # CONSUL_CONFIG_DIR isn't exposed as a volume but you can compose additional
 # config files in there if you use this image as a base, or use CONSUL_LOCAL_CONFIG
@@ -62,6 +68,7 @@ if [ "$1" = 'agent' ]; then
         -data-dir="$CONSUL_DATA_DIR" \
         -config-dir="$CONSUL_CONFIG_DIR" \
         $CONSUL_BIND \
+        $CONSUL_ADVERTISE\
         $CONSUL_CLIENT \
         "$@"
 elif [ "$1" = 'version' ]; then
